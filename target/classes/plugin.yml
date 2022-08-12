@@ -1,0 +1,12 @@
+name: DeathExchange
+author: KazuhaAyato
+main: com.kazuha.de.main
+softdepend: [PlaceholderAPI]
+version: 1.0.0-RELEASE
+commands:
+  de:
+    aliases:
+      - deathexchange
+      - death
+    usage: what the fuck
+    description: main command

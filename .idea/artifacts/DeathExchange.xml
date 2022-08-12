@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="DeathExchange">
+    <output-path>$PROJECT_DIR$/out/artifacts/DeathExchange</output-path>
+    <root id="archive" name="DeathExchange.jar">
+      <element id="module-output" name="DeathExchange" />
+    </root>
+  </artifact>
+</component>
