@@ -25,7 +25,8 @@ public class CountDown {
                     for(Player player : Bukkit.getOnlinePlayers()){
                         player.sendTitle("§c§lFAILED", "§e人数不足");
                         player.sendMessage("§c游戏启动失败！ 人数不足！");
-                        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE,1.0f,1.0f);
+                        player.getPlayer().sendTitle(" ", "§c"+ Bukkit.getOnlinePlayers().size() + "§e/" + Bukkit.getMaxPlayers());
+                        player.playSound(player.getLocation(), Sound.EXPLODE,1.0f,1.0f);
                         start = config.getInt("countdown-sec");
                     }
                     return;
@@ -53,7 +54,7 @@ public class CountDown {
     public void SendTitle(int time){
             for(Player player : Bukkit.getOnlinePlayers()){
                 player.sendTitle("§c§l" + time, "§e游戏即将开始！");
-                player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL,1.0f,1.0f);
+                player.playSound(player.getLocation(), Sound.NOTE_STICKS,1.0f,1.0f);
             }
     }
 }

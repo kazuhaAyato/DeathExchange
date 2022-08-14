@@ -15,7 +15,7 @@ public class SettleMent {
             p.sendTitle("§c§l游戏结束！", "§7你失败了 但问题不大");
         }
         for(Player p : Bukkit.getOnlinePlayers()){
-            p.setGameMode(GameMode.SPECTATOR);
+            Bukkit.getScheduler().runTask(main.instance,()-> p.setGameMode(GameMode.SPECTATOR));
             p.sendMessage("§f===============================================");
             p.sendMessage("§f");
             p.sendMessage("§4死亡互换 §f@ §bMhxj§f.§aClub §7对局#"+ main.getUid());
@@ -31,16 +31,5 @@ public class SettleMent {
             p.sendMessage("§f");
             p.sendMessage("§f===============================================");
         }
-        final int[] e = {5};
-        new BukkitRunnable(){
-            @Override
-            public void run(){
-                Bukkit.broadcastMessage("§e服务器将在§c"+ e[0] +"§e秒后重启！");
-                e[0]--;
-                if(e[0] < 0){
-                    Bukkit.getServer().shutdown();
-                }
-            }
-        }.runTaskTimer(main.instance,200L,20L);
     }
 }

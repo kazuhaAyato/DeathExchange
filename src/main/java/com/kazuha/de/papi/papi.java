@@ -8,7 +8,7 @@ import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 
 public class papi extends PlaceholderExpansion {
-    public static String Event_msg;
+    public static String Event_msg = "Loading...";
     public static String well;
     private final main plugin;
 
@@ -45,7 +45,7 @@ public class papi extends PlaceholderExpansion {
         if(params.equalsIgnoreCase("uid")){
             return String.valueOf(main.uid);
         }
-        return null; // Placeholder is unknown by the Expansion
+        return " "; // Placeholder is unknown by the Expansion
     }
 
 }

@@ -26,16 +26,11 @@ public class GameWatcher implements Listener {
         }
         if((((Player)e.getEntity()).getHealth() - e.getDamage()) <= 0.0){
             e.setCancelled(true);
+
             Bukkit.getPlayer(e.getEntity().getName()).setGameMode(GameMode.SPECTATOR);
             Bukkit.getPlayer(e.getEntity().getName()).sendTitle("§4你死了！", "§e干的漂亮！");
-            rank.add(((Player) e.getEntity()).getPlayer());
-            playerList.remove(((Player) e.getEntity()).getPlayer());
+            rank.add(Bukkit.getPlayer(e.getEntity().getName()));
             Bukkit.broadcastMessage("§c" + e.getEntity().getName() + "§e寄了。");
-            if(main.playerList.size() == 1){
-                winner = main.playerList.get(0).getName();
-                GameState = State.END;
-                new SettleMent();
-            }
         }
 
     }

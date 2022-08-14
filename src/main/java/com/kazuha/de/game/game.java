@@ -1,49 +1,53 @@
 package com.kazuha.de.game;
 
 import com.google.common.collect.Lists;
+import com.kazuha.de.DeathThread;
 import com.kazuha.de.main;
 import com.kazuha.de.papi.papi;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 public class game {
     Long start;
     public static int SwitchTimes = 0;
     public game(){
         start = System.currentTimeMillis();
-        Bukkit.broadcastMessage("§a请稍等，系统正在配置游戏！");
         Objects.requireNonNull(Bukkit.getWorld("world")).setDifficulty(Difficulty.HARD);
-
+        PotionEffect potionEffect = new PotionEffect(PotionEffectType.BLINDNESS,99999,1);
+        PotionEffect potion2Effect = new PotionEffect(PotionEffectType.SLOW,99999,1);
+        Bukkit.getOnlinePlayers().forEach(Player -> {
+            Player.addPotionEffect(potionEffect);
+            Player.addPotionEffect(potion2Effect);
+            Player.sendTitle("§a正在配置游戏", "§7请等一会拉");
+        });
+        final int[] swtir = {0};
+        Bukkit.getOnlinePlayers().forEach(Player -> {
+            Player.teleport(main.tplocs.get(swtir[0]));
+            swtir[0]++;
+            Player.getActivePotionEffects().clear();
+            Player.sendTitle(" ", " ");
+        });
+        main.playerList = Lists.newArrayList(Bukkit.getOnlinePlayers());
         Bukkit.getWorld("world").getWorldBorder().setCenter(new Location(Bukkit.getWorld("world"),0.0,0.0,0.0));
         Bukkit.getWorld("world").getWorldBorder().setSize(5000);
-        Random random = new Random();
-        for(Player p : Bukkit.getOnlinePlayers()){
-            Location loc = new Location(Bukkit.getWorld("world"),random.nextInt(5000) - 2500,256.0,random.nextInt(5000) - 2500);
-            while(true){
-                if(loc.getBlock().getType() == Material.AIR){
-                    loc.setY(loc.getY()-1.0);
-                }else{
-                    loc.setY(loc.getY()+1.0);
-                    break;
-                }
-            }
-            p.teleport(loc);
-        }
+        //GameDaemon
+        Thread thread = new Thread(new DeathThread());
+        thread.start();
         List<String> list = main.config.getStringList("start-info");
         for(String e : list){
             Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&',e));
         }
         Bukkit.broadcastMessage("§4§l互换将在 §c1分30秒 §4§l后开始 祝你好运 glhf");
-        SimpleDateFormat format = new SimpleDateFormat("mm:ss");
         papi.Event_msg = "§a准备阶段";
-        final int[] e = {0};
+        final int[] e = {-160};
+        final HashMap<Player,Player> Assigned = new HashMap<>();
+        final List<Player>[] papalist = new List[]{new ArrayList<>()};
         new BukkitRunnable(){
             @Override
             public void run(){
@@ -52,32 +56,72 @@ public class game {
                 }
                 if(e[0] <= -160){
                     Bukkit.broadcastMessage("§4§l互换 §c将在 §f30秒 §c后开始");
+                    new BukkitRunnable(){
+                        @Override
+                        public void run(){
+                            int index = 1;
+                            if (Bukkit.getOnlinePlayers().size() >= 16){
+                                index = 5;
+                            }
+                            if (Bukkit.getOnlinePlayers().size() >= 12){
+                                index = 4;
+                            }
+                            if (Bukkit.getOnlinePlayers().size() >= 8){
+                                index = 3;
+                            }
+                            if (Bukkit.getOnlinePlayers().size() > 4){
+                                index = 2;
+                            }
+                            index = new Random().nextInt(index);
+                            Long e = System.currentTimeMillis();
+                            papalist[0] = main.playerList;
+                            Random random1 = new Random();
+                            if(papalist[0].size()%2 != 0){
+                                papalist[0].remove(random1.nextInt(papalist[0].size()));
+                            }
+                            while (index > 0){
+                                index--;
+                                if(papalist[0].isEmpty())break;
+                                Player player = papalist[0].get(random1.nextInt(papalist[0].size()));
+                                papalist[0].remove(player);
+                                if(papalist[0].isEmpty())break;
+                                Player player1 = papalist[0].get(random1.nextInt(papalist[0].size()));
+                                papalist[0].remove(player1);
+                                Assigned.put(player1,player);
+
+                            }
+                            StringBuilder xingyunguanzhong = new StringBuilder();
+                            for(Player p : Assigned.keySet()){
+                                xingyunguanzhong.append(p.getName()+", ");
+                                p.sendTitle("§c恭喜！","§7你即将跟随机人类互换");
+                                xingyunguanzhong.append(Assigned.get(p)+", ");
+                                Assigned.get(p).sendTitle("§c恭喜！","§7你即将跟随机人类互换");
+                            }
+                            Bukkit.broadcastMessage("§c本次互换位置已加载完成: 将互换§f"+ index*2 + "§c名玩家:" );
+                            Bukkit.broadcastMessage(xingyunguanzhong.toString());
+                            Bukkit.broadcastMessage("§c恭喜上面的玩家！请做好准备" );
+                            Bukkit.getServer().getLogger().info("本次互换已经准备完毕 耗时:"+(System.currentTimeMillis() - e) + "ms");
+                        }
+                    }.runTaskAsynchronously(main.instance);
                     e[0] = 30;
                 }
                 if(e[0] == 0){
-                    List<Player> playerList = Lists.newArrayList(Bukkit.getOnlinePlayers());
-                    Random random1 = new Random();
-                    Bukkit.broadcastMessage("§c互换已开始！");
-                    if(playerList.size()%2 != 0){
-                        playerList.remove(random1.nextInt(Bukkit.getOnlinePlayers().size()));
-                    }
-                    for(Player p : Bukkit.getOnlinePlayers()){
-                        //互换核心代码
-                        if(playerList.isEmpty())break;
-                        Player player = playerList.get(random1.nextInt(playerList.size()));
-                        Player player1 = playerList.get(random1.nextInt(playerList.size()));
-                        Location player1loc = player.getLocation();
-                        Location player2loc = player1.getLocation();
-                        player1.teleport(player1loc);
-                        player.teleport(player2loc);
-                        playerList.remove(player1);
-                        playerList.remove(player);
+                    e[0] --;
+                                Bukkit.broadcastMessage("§c互换已开始！");
+                                Assigned.keySet().forEach(player -> {
+                                        Location location = player.getLocation();
+                                        player.teleport(Assigned.get(player).getLocation());
+                                        Assigned.get(player).teleport(location);
+                                });
+
+
+                    for(Player p : main.playerList){
+                        p.setFallDistance(0.0f);
                     }
                     SwitchTimes ++;
                     papi.Event_msg = "§c位置已互换！";
-
                     papi.Event_msg = "§7等待下次互换";
-                    e[0]--;
+
                 }else{
                     e[0]--;
                     if(e[0] > 0){
@@ -90,10 +134,7 @@ public class game {
 
                     return;
                 }
-
-
             }
-            //TODO 语法逻辑检查
-        }.runTaskTimer(main.instance,1800, 20);
+        }.runTaskTimer(main.instance,main.config.getInt("wait"), 20);
     }
 }
