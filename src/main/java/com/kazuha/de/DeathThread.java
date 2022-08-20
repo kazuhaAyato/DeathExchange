@@ -1,5 +1,6 @@
 package com.kazuha.de;
 
+import com.google.common.collect.Lists;
 import com.kazuha.de.game.GameWatcher;
 import com.kazuha.de.game.SettleMent;
 import com.kazuha.de.game.State;
@@ -21,8 +22,14 @@ public class DeathThread implements Runnable{
             }
             main.playerList = player;
             if(player.size() < 2){
+                if(player.isEmpty()){
+                    main.rank = Lists.reverse(main.rank);
+                    GameWatcher.winner = main.rank.get(0).getName();
+                }else{
+                    GameWatcher.winner = player.get(0).getName();
+                }
                 main.GameState = State.END;
-                GameWatcher.winner = player.get(0).getName();
+
                 new SettleMent();
                 try {
                     Thread.sleep(5000);

@@ -16,38 +16,37 @@ public class CountDown {
         new BukkitRunnable(){
             @Override
             public void run(){
-                if(GameState != State.COUNTDOWN)return;
-                papi.Event_msg = "§e准备开始游戏 §f- §c" + start;
-                if(playerList.size() < config.getInt("start-player")){
-                    if(GameState != State.COUNTDOWN)return;
-                    GameState = State.WATING;
+                if(GameState == State.COUNTDOWN){
+                    papi.Event_msg = "§e准备开始游戏 §f- §c" + start;
+                    if(playerList.size() < config.getInt("start-player")){
+                        GameState = State.WATING;
 
-                    for(Player player : Bukkit.getOnlinePlayers()){
-                        player.sendTitle("§c§lFAILED", "§e人数不足");
-                        player.sendMessage("§c游戏启动失败！ 人数不足！");
-                        player.getPlayer().sendTitle(" ", "§c"+ Bukkit.getOnlinePlayers().size() + "§e/" + Bukkit.getMaxPlayers());
-                        player.playSound(player.getLocation(), Sound.EXPLODE,1.0f,1.0f);
-                        start = config.getInt("countdown-sec");
+                        for(Player player : Bukkit.getOnlinePlayers()){
+                            player.sendTitle("§c§lFAILED", "§e人数不足");
+                            player.sendMessage("§c游戏启动失败！ 人数不足！");
+                            player.getPlayer().sendTitle(" ", "§c"+ Bukkit.getOnlinePlayers().size() + "§e/" + Bukkit.getMaxPlayers());
+                            player.playSound(player.getLocation(), Sound.EXPLODE,1.0f,1.0f);
+                            start = config.getInt("countdown-sec");
+                        }
+                        return;
                     }
-                    return;
-                }
-                if(playerList.size() == Bukkit.getMaxPlayers()){
-                    if(start > 5){
-                        Bukkit.broadcastMessage("§a玩家已满！减少倒计时");
-                        start = 5;
+                    if(playerList.size() == Bukkit.getMaxPlayers()){
+                        if(start > 5){
+                            Bukkit.broadcastMessage("§a玩家已满！减少倒计时");
+                            start = 5;
+                        }
                     }
+                    if (start <= 0){
+                        if(GameState != State.COUNTDOWN)return;
+                        new game();
+                        return;
+                    }else if (start < 10){
+                        SendTitle(start);
+                    }else if (start%10 == 0){
+                        SendTitle(start);
+                    }
+                    start --;
                 }
-                if (start <= 0){
-                    if(GameState != State.COUNTDOWN)return;
-                    GameState = State.PLAYING;
-                    new game();
-                    return;
-                }else if (start < 10){
-                    SendTitle(start);
-                }else if (start%10 == 0){
-                    SendTitle(start);
-                }
-                start --;
             }
         }.runTaskTimer(instance,0,20);
     }

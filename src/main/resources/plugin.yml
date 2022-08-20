@@ -2,7 +2,7 @@ name: DeathExchange
 author: KazuhaAyato
 main: com.kazuha.de.main
 softdepend: [PlaceholderAPI]
-version: 1.2.0-RELEASE
+version: 1.2.2-BETA4
 commands:
   de:
     aliases:

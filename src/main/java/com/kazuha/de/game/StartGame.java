@@ -20,6 +20,7 @@ public class StartGame implements Listener {
 
     @EventHandler
     public void OnJoin(PlayerJoinEvent e){
+        if(!CanJoin)e.getPlayer().kickPlayer("服务器正在初始化请等一会再来");
         if(!GameState.equals(State.WATING) && !GameState.equals(State.COUNTDOWN)) {
             e.getPlayer().setGameMode(GameMode.SPECTATOR);
             e.setJoinMessage("");
@@ -28,6 +29,7 @@ public class StartGame implements Listener {
         }
         playerList.add(e.getPlayer());
         SendTitle(e.getPlayer());
+        e.getPlayer().getActivePotionEffects().clear();
         e.getPlayer().setHealth(20.0);
         e.getPlayer().setLevel(0);
         e.getPlayer().setExp(0.0f);
@@ -43,7 +45,7 @@ public class StartGame implements Listener {
                 return;
             }
             GameState = State.COUNTDOWN;
-            new CountDown();
+
             return;
         }
     }

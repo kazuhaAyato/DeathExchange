@@ -26,6 +26,7 @@ public class main extends JavaPlugin {
     public static List<Player> rank = new ArrayList<>();
     public static int uid;
     public static List<Location> tplocs = new ArrayList<>();
+    public static Boolean CanJoin = false;
     public static List<Player> playerList = new ArrayList<>();
     @Override
     public void onEnable(){
@@ -48,24 +49,30 @@ public class main extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new StartGame(),this);
         Bukkit.getPluginManager().registerEvents(new GameWatcher(),this);
         Bukkit.getPluginManager().registerEvents(new actdisabler(),this);
+        new CountDown();
         getLogger().info("§f正在初始化..");
         new BukkitRunnable(){
             @Override
             public void run(){
                 for(int i = 0; i<= Bukkit.getMaxPlayers(); i++){
                     Location loc = new Location(Bukkit.getWorld("world"),new Random().nextInt(5000)-2500,100,new Random().nextInt(5000)-2500);
-                    for(int e = 200; e>=0; e--){
-                        if(loc.getBlock().getType() != Material.AIR){
-                            loc.setY(loc.getY()-1);
-                        }else{
-                            break;
-                        }
-                    }
-                    if(loc.getBlock().getType() == Material.WATER || loc.getBlock().getType() == Material.LAVA){
-                        loc.getBlock().setType(Material.STONE);
-                    }
+                        Bukkit.getScheduler().runTask(main.instance,()->{
+                            for(int e = 200; e>=0; e--){
+                                if(loc.getBlock().getType() != Material.AIR) {
+                                    loc.setY(loc.getY() - 1);
+                                }else{
+                                    break;
+                                }
+
+                            }
+                            if(loc.getBlock().getType() == Material.WATER || loc.getBlock().getType() == Material.LAVA){
+                                loc.getBlock().setType(Material.STONE);
+                            }
+                            Bukkit.getWorld("world").regenerateChunk(loc.getBlockX(),loc.getBlockZ());
+                        });
                     tplocs.add(loc.add(0,1,0));
                 }
+                CanJoin = true;
             }
         }.runTaskAsynchronously(this);
     }
